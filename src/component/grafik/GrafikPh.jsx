@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./grafikStyles.css";
+import { BASE_URL } from "../../utils/baseUrl";
 import jwtDecode from "jwt-decode";
 import {
   Chart as ChartJS,
@@ -59,8 +60,6 @@ const DATA_END_POINT_API_PH = [
     value: "semua",
   },
 ];
-
-const BASE_URL = "http://localhost:5000/api";
 
 export default function GrafikPh() {
   const [dataPh, setData] = useState([]);
