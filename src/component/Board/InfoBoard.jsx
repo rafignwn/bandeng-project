@@ -30,6 +30,7 @@ export default function InfoBoard() {
   const [dataPh, setDataPh] = useState(data_default);
   const [dataPakan, setDataPakan] = useState(data_pakan_default);
   const [pHValue, setPhValue] = useState(0);
+  const [levelPh, setLevelPh] = useState("");
   const api = useAxiosJwt(new Date().getTime());
   const [loading, setLoading] = useState(true);
   const bodyInfo = useRef();
@@ -58,6 +59,7 @@ export default function InfoBoard() {
       const response = await api.get("/ph/CurrentpHValue");
       const data = response.data;
       setPhValue(data.nilaiPh);
+      setLevelPh(data.levelPh);
       setDataPh({
         ...data_default,
         values: [[data.nilaiPh], [data.levelPh]],
@@ -74,15 +76,15 @@ export default function InfoBoard() {
       const response = await api.get("/feed/ShortRecords");
       const data = response.data;
       const waktu_pakan = format(
-        parseISO(data.waktuPakan),
+        parseISO(data.info.waktuPakan),
         "eeeeeee, dd MMM yyyy HH:mm:ss",
         { locale: id }
       );
       setDataPakan({
         ...data_pakan_default,
         values: [
-          [`${data.sisaPakan}%`],
-          [`${data.beratPakan} kg`, waktu_pakan],
+          [`${data.info.sisaPakan}%`],
+          [`${data.info.beratPakan} gr`, waktu_pakan],
         ],
       });
     } catch (error) {
@@ -154,7 +156,10 @@ export default function InfoBoard() {
         </div>
       </div>
       <div className="item-toples">
-        <ToplesCupang value={pHValue ? `pH ${pHValue}` : ""} />
+        <ToplesCupang
+          value={pHValue ? `${pHValue}` : ""}
+          level={levelPh ? `${levelPh.toLowerCase()}` : ""}
+        />
       </div>
     </div>
   );

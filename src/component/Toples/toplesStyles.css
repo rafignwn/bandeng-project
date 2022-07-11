@@ -38,6 +38,27 @@
     animation-timing-function: linear;
     animation-iteration-count: infinite; */
 }
+.netral.liquid {
+    background-color: #00cc99;
+    filter:  drop-shadow(0 0 20px #00cc99);
+}
+.netral.liquid::before {
+    background-color: #077c72;
+}
+.asam.liquid {
+    background-color: #ffcc00a6;
+    filter:  drop-shadow(0 0 20px #ffcc00);
+}
+.asam.liquid::before {
+    background-color: #dfce2d;
+}
+.basa.liquid {
+    background-color: #8100998a;
+    filter:  drop-shadow(0 0 20px #810099);
+}
+.basa.liquid::before {
+    background-color: #810099;
+}
 .toples::before {
     content: '';
     position: absolute;
@@ -65,14 +86,19 @@
     color: #fff;
     font-size: 35px;
     opacity: .7;
-    font-weight: 700;
+    font-weight: 600;
     margin: auto;
     display: inline-block;
     position: absolute;
+    white-space: nowrap;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
+}
+.liquid span code {
+    font-weight: 400;
+    margin-right: 10px;
 }
 .liquid::before {
     content: '';

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ItemInfo from "../ItemInfo/ItemInfo";
-import { format, parseISO } from "date-fns";
-import { id } from "date-fns/locale";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import "./pakanStyles.css";
 import LinkHome from "../LinkHome/LinkHome";
@@ -11,31 +9,70 @@ import { useNavigate } from "react-router-dom";
 import ButtonLogout from "../ButtonLogout/ButtonLogout";
 import axios from "axios";
 import { BASE_URL } from "../../utils/baseUrl";
+import timeToString from "../../utils/timeToString";
 
 export default function MonitroingPakan() {
   const [sisaPakan, setSisaPakan] = useState(0);
   const api = useAxiosJwt();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [fixDataPakan, setFixDataPakan] = useState(null);
+
+  function parseTime(waktu) {
+    return timeToString(waktu, "eeeeeeee, dd MMM yyyy HH:mm:ss");
+  }
+
+  async function getDataPakan() {
+    const res = await api.get("/feed/ShortRecords");
+    return res.data;
+  }
 
   const dataPakanDefault = {
-    items: ["Jam Pemberian Pakan Ikan", "Penggunaan Terakhir Pakan Ikan"],
-    values: [["07:00", "13:00", "17:00"]],
+    items: [
+      "Jam Pemberian Pakan Ikan",
+      "Penggunaan Terakhir Pakan Ikan",
+      "Rekap Terakhir Data Pakan",
+    ],
     link: {
       title: "Beri Pakan Ikan",
       type: "button",
       action: async function (e) {
         console.log("Sedang memberi pakan ikan");
-        e.currentTarget.textContent = "Sedang Memberi Pakan";
+        e.currentTarget.textContent = "Sedang Memberi Pakan...";
         e.currentTarget.classList.add("btn-wait");
         let intervalPakan = setInterval(async () => {
           const response = await axios.get(`${BASE_URL}/feed/CheckTimeToFeed`);
           console.log(response.data);
           if (response.data === 0) {
-            const btnWait = document.querySelector(".btn-wait");
-            btnWait.textContent = "Beri Pakan Ikan";
-            btnWait.classList.remove("btn-wait");
-
+            const btnPakan =
+              document.querySelector(".btn-wait") ||
+              document.querySelector(".btn-goal");
+            // update data pakan
+            const newData = await getDataPakan();
+            dataPakanDefault.values = [
+              ["08:00", "16:30"],
+              [
+                `${newData.info.beratPakan} gr`,
+                parseTime(newData.info.waktuPakan),
+              ],
+              [
+                `Hari Ini: ${(newData.infoRekap.hari / 1000).toFixed(2)} kg`,
+                `Seminggu: ${(newData.infoRekap.minggu / 1000).toFixed(2)} kg`,
+                `Sebulan: ${(newData.infoRekap.bulan / 1000).toFixed(2)} kg`,
+              ],
+            ];
+            setFixDataPakan(dataPakanDefault);
+            setSisaPakan(newData.info.sisaPakan);
+            // pesan berhasil
+            btnPakan.classList.remove("btn-wait");
+            btnPakan.classList.add("btn-goal");
+            btnPakan.textContent = "Berhasil Memberi Pakan";
+            // delay 3 detik
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            // set button ke defaul
+            btnPakan.classList.remove("btn-goal");
+            btnPakan.textContent = "Beri Pakan Ikan";
+            // clear interval cek kondisi makan
             clearInterval(intervalPakan);
           }
         }, [2500]);
@@ -54,31 +91,33 @@ export default function MonitroingPakan() {
       // jika sudah login ambil data di server
       if (isLogin) {
         setLoading(false);
-        fetchFeedRecords();
+        if (fixDataPakan) {
+          setDataPakan(fixDataPakan);
+        } else {
+          fetchFeedRecords();
+        }
       } else {
         // jika belum login redirect ke halaman login
         navigate("/");
       }
     })();
     // eslint-disable-next-line
-  }, []);
+  }, [fixDataPakan]);
 
   // sebuah fungsi untuk mengambil data pakan terbaru dari server
   const fetchFeedRecords = async () => {
     try {
       const response = await api.get("/feed/ShortRecords");
       const data = response.data;
-      setSisaPakan(data.sisaPakan);
-      const waktu_pakan = format(
-        parseISO(data.waktuPakan),
-        "eeeeeeee, dd MMM yyyy HH:mm:ss",
-        {
-          locale: id,
-        }
-      );
+      setSisaPakan(data.info.sisaPakan);
       dataPakanDefault.values = [
-        ...dataPakanDefault.values,
-        [`${data.beratPakan} kg`, waktu_pakan],
+        ["08:00", "16:30"],
+        [`${data.info.beratPakan} gr`, parseTime(data.info.waktuPakan)],
+        [
+          `Hari Ini: ${(data.infoRekap.hari / 1000).toFixed(2)} kg`,
+          `Seminggu: ${(data.infoRekap.minggu / 1000).toFixed(2)} kg`,
+          `Sebulan: ${(data.infoRekap.bulan / 1000).toFixed(2)} kg`,
+        ],
       ];
       setDataPakan(dataPakanDefault);
     } catch (error) {

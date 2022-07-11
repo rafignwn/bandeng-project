@@ -68,7 +68,8 @@
 .link a:hover::before,
 .link button:hover::before,
 .link a:active::before,
-.link button.btn-wait::before  {
+.link button.btn-wait::before,
+.link button.btn-goal::before  {
   left: 0;
   top: 0;
   border-radius: 0;
@@ -77,6 +78,11 @@
   color: var(--dark);
   border-color: var(--semi-dark);
   pointer-events: none;
+}
+.link button.btn-goal {
+  background-color: #86DB03;
+  border-color: #86DB03;
+  color: #fff;
 }
 .link button.btn-wait::before {
   background-color: var(--orange);
@@ -90,4 +96,22 @@
   color: var(--blue);
   opacity: .8;
   letter-spacing: .7px;
+}
+
+/* warna level ph */
+.info ul li span.netral {
+  background-color: #00cc9979;
+}
+.info ul li span.asam {
+  background-color: #ffcc0079;
+}
+.info ul li span.basa {
+  background-color: #66009979;
+}
+/* warna kondisi */
+.info ul li span.baik {
+  background-color: #5aa1fc79;
+}
+.info ul li span.kurang {
+  background-color: #66003389;
 }

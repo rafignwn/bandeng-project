@@ -49,11 +49,11 @@ const DATA_END_POINT_API_PH = [
     isActive: false,
     value: "bulan",
   },
-  {
-    endPoint: "/ph/RecordPhValueLastYear",
-    isActive: false,
-    value: "tahun",
-  },
+  // {
+  //   endPoint: "/ph/RecordPhValueLastYear",
+  //   isActive: false,
+  //   value: "tahun",
+  // },
   {
     endPoint: "/ph/GetPhValue",
     isActive: true,

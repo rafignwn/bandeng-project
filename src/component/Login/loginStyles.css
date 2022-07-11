@@ -1,6 +1,24 @@
 #root {
     overflow: hidden;
 }
+.isLoading, .loaded {
+    position: absolute;
+    z-index: 1000;
+    background-color: rgba(15, 168, 179, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: top 200ms ease-out;
+}
+.isLoading {
+    top: 0;
+}
+.loaded {
+    top: -150%;
+}
 .form-login {
     display: flex;
     align-items: center;
